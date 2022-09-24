@@ -1,0 +1,63 @@
+select * from census.dbo.Data1
+
+select * from census.dbo.Data2
+
+-- Number of rows
+
+select count(*) from census..Data1
+
+select count(*) from census..Data2
+
+-- Normal where filter for columns
+
+select * from census..Data1 where District in ('Thane')
+
+select * from census..Data1 where state in ('Jharkhand' ,'Bihar')
+
+-- Aggregate functions - Alias
+
+-- Population of India
+
+select sum(Population) Pop from census..Data2
+
+-- Avg Growth
+
+select avg(Growth)* 100 as Growth_rate from census..Data1
+
+-- Avg Growth by Statewise
+
+select avg(Growth)* 100 as Growth_rate_byState , State from census..Data1
+group by State
+
+-- Avg sex ratio per state
+
+select round(AVG(Sex_Ratio),2) as Avg_Ration, State from census..Data1
+group by State order by Avg_Ration desc
+
+-- Avg Literacy rate
+
+select State, round(AVG(Literacy),2) as Lit_rate from census..Data1 
+group by State having round(AVG(Literacy),2)<70 order by Lit_rate asc 
+
+
+-- top 3 states with high growth rate
+-- high litearacy rate
+-- high sex ratio
+
+select top 3 State, round(avg(Growth)* 100,2) as Growth_rate_byState from census..Data1
+group by State order by Growth_rate_byState desc
+
+-- top 3 states with lowest growth rate
+
+select top 3 State, round(avg(Growth)* 100,2) as Growth_rate_byState from census..Data1
+group by State order by Growth_rate_byState asc
+
+
+
+
+
+
+
+
+
+
