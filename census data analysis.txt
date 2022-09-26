@@ -136,6 +136,80 @@ a.District=b.District
 
 
 
+-- total literacy and illiteraxcy people
+
+
+select d.State, sum(d.total_literacy) as literate_ppl_Instate, sum(total_illiteracy) as Illiterate_ppl_Instate from
+(select c.District, c.state, round((c.literacy_ratio*c.Population),0) as total_literacy, round(((1-c.literacy_ratio)*c.Population),0) as total_illiteracy from
+(select a.District, a.State, a.Literacy/100 literacy_ratio, b.Population from census..Data1 as a
+inner join census..Data2 as b on
+a.District=b.District) c) d
+group by State;
+
+
+-- population from previous census
+
+select sum(m.prev_pop) as total_population_in_last_Census , sum(m.curr_pop) as total_population_in_curr_census from
+(select d.State, sum(d.previous_census_pop) as prev_pop, sum(d.current_census_pop) as curr_pop from
+(select c.District, c.state, round(c.Population/(1+c.Growth),0) as previous_census_pop, c.Population as current_census_pop from
+(select a.District, a.State, a.Growth, b.Population from census..Data1 as a
+inner join census..Data2 as b on
+a.District=b.District) c) d
+group by d.State) m
+
+
+-- population Vs area
+
+
+select o.total_area/o.total_population_in_last_Census as prev_pop_vs_area, o.total_area/o.total_population_in_curr_census as curr_pop_vs_area from
+(select q.*, r.total_area from
+(select '1' as keyy,n.* from
+(select sum(m.prev_pop) as total_population_in_last_Census , sum(m.curr_pop) as total_population_in_curr_census from
+(select d.State, sum(d.previous_census_pop) as prev_pop, sum(d.current_census_pop) as curr_pop from
+(select c.District, c.state, round(c.Population/(1+c.Growth),0) as previous_census_pop, c.Population as current_census_pop from
+(select a.District, a.State, a.Growth, b.Population from census..Data1 as a
+inner join census..Data2 as b on
+a.District=b.District) c) d
+group by d.State) m)n)q inner join (
+
+select '1' as keyy, z.* from (
+select sum(Area_km2) as total_area from census..Data2) z)r on q.keyy=r.keyy) o
+
+
+-- Window functions
+
+-- Rank Functions
+
+-- top 3 districts from every state with high literacy ratio
+
+select a.* from
+(select District, State, Literacy, RANK() over(partition by state order by literacy desc) rank from 
+census..Data1) a
+
+where a.rank in (1,2,3) order by State;
+
+
+-- top 3 districts from every state with low literacy ratio
+
+
+select a.* from
+(select District, State, Literacy, RANK() over(partition by state order by literacy asc) rank from 
+census..Data1) a
+
+where a.rank in (1,2,3) order by State;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
