@@ -103,6 +103,30 @@ where State Like 'A%' or State Like 'B%'
 select distinct(State) from census..Data1
 where State Like 'A%' and State Like '%m'
 
+-- joining tables
+
+select t1.District, t1.State, t1.Sex_Ratio, t2.Population from census..Data1 as t1 
+left join census..Data2 as t2 on
+t1.District=t2.District
+
+select * from census.dbo.Data1
+
+select * from census.dbo.Data2
+
+0Sex_Ratio+1),0) males, round(c.Population*(c.Sex_Ratio/(c.Sex_Ratio+1)),0) females from
+0(select a.District, a.State, a.Sex_Ratio/1000 sex_ratio, b.Population from census..Data1 as a
+left join census..Data2 as b on
+a.District=b.District) c) d
+group by d.State;
+
+
+-- total literacy rate
+
+select a.District, a.State, a.Sex_Ratio/1000 sex_ratio, b.Population from census..Data1 as a
+left join census..Data2 as b on
+a.District=b.District
+
+
 
 
 
