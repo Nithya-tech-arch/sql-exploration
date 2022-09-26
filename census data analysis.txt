@@ -102,7 +102,6 @@ where State Like 'A%' or State Like 'B%'
 
 select distinct(State) from census..Data1
 where State Like 'A%' and State Like '%m'
-
 -- joining tables
 
 select t1.District, t1.State, t1.Sex_Ratio, t2.Population from census..Data1 as t1 
@@ -113,8 +112,16 @@ select * from census.dbo.Data1
 
 select * from census.dbo.Data2
 
-0Sex_Ratio+1),0) males, round(c.Population*(c.Sex_Ratio/(c.Sex_Ratio+1)),0) females from
-0(select a.District, a.State, a.Sex_Ratio/1000 sex_ratio, b.Population from census..Data1 as a
+select d.state,sum(d.males) total_males,sum(d.females) total_females from
+(select c.district,c.state state,round(c.population/(c.sex_ratio+1),0) males, round((c.population*c.sex_ratio)/(c.sex_ratio+1),0) females from
+(select a.district,a.state,a.sex_ratio/1000 sex_ratio,b.population from census..data1 a inner join census..data2 b on a.district=b.district ) c) d
+group by d.state;
+
+--calculating male and females
+
+select d.State, sum(d.males) as total_males, sum(d.females) as total_females from  
+(select c.District, c.state, round(c.population/(c.Sex_Ratio+1),0) males, round(c.Population*(c.Sex_Ratio/(c.Sex_Ratio+1)),0) females from
+(select a.District, a.State, a.Sex_Ratio/1000 sex_ratio, b.Population from census..Data1 as a
 left join census..Data2 as b on
 a.District=b.District) c) d
 group by d.State;
@@ -125,6 +132,7 @@ group by d.State;
 select a.District, a.State, a.Sex_Ratio/1000 sex_ratio, b.Population from census..Data1 as a
 left join census..Data2 as b on
 a.District=b.District
+
 
 
 
