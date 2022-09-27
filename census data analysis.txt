@@ -198,3 +198,6 @@ select a.* from
 census..Data1) a
 
 where a.rank in (1,2,3) order by State;
+
+
+.
